@@ -1,14 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 
-class Product extends Component {
+const Product = props => {
+  
+  const { name, count, id } = props.product;
+  const { onPlus, onDelete} = props;
 
-  render() {
-      
-    const { name, count, id, price } = this.props.product;
-
-    return (
-      <div>
-        <span>{name}</span>
+  return ( 
+    <div>
+        <h3 className="d-inline">{name}</h3>
         <span
           className={
             count === 0 ? "badge bg-warning m-2" : "badge bg-primary m-2"
@@ -18,21 +17,21 @@ class Product extends Component {
         </span>
 
         <button
-          className="btn btn-sm btn-success m-2"
-          onClick={() => this.props.onPlus(id)}
+          className="btn btn-success m-2"
+          onClick={() => onPlus(id)}
         >
           <i className="fa-solid fa-plus"></i>
         </button>
 
         <button
-          onClick={() => this.props.onDelete(id)}
-          className="btn btn-sm btn-danger m-2"
+          onClick={() => onDelete(props.product)}
+          className="btn btn-danger m-2"
         >
           <i className="fa-solid fa-trash"></i>
         </button>
       </div>
-    );
-  }
+   );
 }
-
+ 
 export default Product;
+
