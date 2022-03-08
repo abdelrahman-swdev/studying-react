@@ -1,0 +1,46 @@
+{
+  "types": [
+    {
+      "id": 0,
+      "name": "All"
+    },
+    {
+      "id": 1,
+      "name": "Meat"
+    },
+    {
+      "id": 2,
+      "name": "Sides"
+    },
+    {
+      "id": 3,
+      "name": "Drink"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "typeId": 1,
+      "name": "Burger",
+      "price": 50,
+      "count": 0,
+      "isInCart": false
+    },
+    {
+      "id": 2,
+      "typeId": 3,
+      "name": "Cola",
+      "price": 10,
+      "count": 0,
+      "isInCart": false
+    },
+    {
+      "id": 3,
+      "typeId": 2,
+      "name": "Fries",
+      "price": 15,
+      "count": 0,
+      "isInCart": false
+    }
+  ]
+}

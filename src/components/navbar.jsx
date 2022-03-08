@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const NavBar = (props) => {
   const { cartCount } = props;
@@ -8,7 +8,7 @@ const NavBar = (props) => {
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
           <NavLink className="navbar-brand" to={`/`}>
-            REACT
+            RIZO
           </NavLink>
           <button
             className="navbar-toggler"
@@ -43,11 +43,31 @@ const NavBar = (props) => {
                   Users
                 </NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/admin-panel">
+                  Admin
+                </NavLink>
+              </li>
             </ul>
+            <div className="btn-group">
+              <button
+                type="button"
+                className="btn btn-dark dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Join Us
+              </button>
+              <ul className="dropdown-menu">
+                <NavLink className="nav-link" to="/login">
+                  Login
+                </NavLink>
+              </ul>
+            </div>
             <NavLink className="nav-link" to="/cart">
               <span
                 className="badge bg-primary"
-                style={{ fontSize: "18px" }}
+                style={{ fontSize: "1rem" }}
                 href="#"
               >
                 <i className="fa-solid fa-cart-shopping"></i> {cartCount}
