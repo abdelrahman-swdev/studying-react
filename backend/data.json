@@ -41,6 +41,22 @@
       "price": 15,
       "count": 0,
       "isInCart": false
+    },
+    {
+      "id": 4,
+      "typeId": 1,
+      "name": "Chiken",
+      "price": 65,
+      "count": 0,
+      "isInCart": false
+    },
+    {
+      "id": 5,
+      "typeId": 3,
+      "name": "Water",
+      "price": 8,
+      "count": 0,
+      "isInCart": false
     }
   ]
 }

@@ -13,6 +13,7 @@ import Menu from "./components/menu";
 import Login from "./components/login";
 import ProductForm from "./components/productForm";
 import Admin from "./components/admin";
+import { ToastContainer, toast } from "react-toastify";
 
 class App extends Component {
   state = {
@@ -138,15 +139,19 @@ class App extends Component {
       .catch((er) => console.log(er));
   };
 
-  handleDelete = (prod) => {
-    axios
-      .delete(`http://localhost:3000/products/${prod.id}`)
-      .then((res) => {
-        if (res.status === 200) {
-          this.deleteProductFromUI(prod);
-        }
-      })
-      .catch((er) => console.log(er));
+  handleDelete = async (prod) => {
+    // optimistic delete
+    const originalData = [...this.state.products];
+    this.deleteProductFromUI(prod);
+
+    try {
+      await axios.delete(`http://localhost:3000/products/${prod.id}`);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        toast.info("Product already deleted.", { autoClose: 3000 });
+      }
+      this.setState({ products: originalData });
+    }
   };
 
   getTypes = () => {
@@ -158,6 +163,7 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
+        <ToastContainer />
         <NavBar
           cartCount={this.state.products.filter((p) => p.isInCart).length}
         />
