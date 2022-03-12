@@ -30,7 +30,7 @@
       "id": 2,
       "typeId": 3,
       "name": "Cola",
-      "price": 10,
+      "price": "9",
       "count": 0,
       "isInCart": false
     },
@@ -46,7 +46,7 @@
       "id": 4,
       "typeId": 1,
       "name": "Chiken",
-      "price": 65,
+      "price": "60",
       "count": 0,
       "isInCart": false
     },
@@ -54,7 +54,15 @@
       "id": 5,
       "typeId": 3,
       "name": "Water",
-      "price": 8,
+      "price": "5",
+      "count": 0,
+      "isInCart": false
+    },
+    {
+      "id": 6,
+      "typeId": 1,
+      "name": "Pizza",
+      "price": 45,
       "count": 0,
       "isInCart": false
     }

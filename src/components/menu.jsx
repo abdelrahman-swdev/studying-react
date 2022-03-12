@@ -69,7 +69,10 @@ const Menu = (props) => {
               onChange={handleSearch}
             />
           </div>
-          <table className="table table-default fs-5" style={{marginTop:'15px'}}>
+          <table
+            className="table table-default fs-5"
+            style={{ marginTop: "15px" }}
+          >
             <thead>
               <tr>
                 <th>Name</th>

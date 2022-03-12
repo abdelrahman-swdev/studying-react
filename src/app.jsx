@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import axios from "axios";
 
@@ -15,220 +15,210 @@ import ProductForm from "./components/productForm";
 import Admin from "./components/admin";
 import { ToastContainer, toast } from "react-toastify";
 
-class App extends Component {
-  state = {
-    types: [],
-    products: [],
-    pageSize: 4,
-    activePage: 1,
-    currentFilter: 0,
-  };
+const App = (props) => {
+  const [types, setTypes] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [pageSize, setPageSize] = useState(4);
+  const [activePage, setActivePage] = useState(1);
+  const [currentFilter, setCurrentFilter] = useState(0);
 
-  componentDidMount = () => {
-    this.fetchProducts();
-    this.fetchTypes();
-  };
+  // after every render
+  useEffect(() => {
+    fetchProducts(setProducts);
+    fetchTypes(setTypes);
+  }, []);
 
-  fetchProducts = () => {
-    axios
-      .get("http://localhost:3000/products")
-      .then((res) => this.setState({ products: res.data }));
-  };
-
-  fetchTypes = () => {
-    axios
-      .get("http://localhost:3000/types")
-      .then((res) => this.setState({ types: res.data }));
-  };
-
-  increaseCountHandler = (id) => {
+  const increaseCountHandler = (prod) => {
     // clone state
-    const products = [...this.state.products];
-    // const index = products.indexOf(p => p.id === id);
-    // products[index] = {...products[index]};
-
+    const data = [...products];
+    const index = data.indexOf(prod);
+    data[index] = { ...data[index] };
     // edit state
-    products.find((p) => p.id === id).count++;
-
+    data[index].count++;
     //set state
-    this.setState({ products });
+    setProducts(data);
   };
 
-  resetHandler = () => {
+  const resetHandler = () => {
     // clone state
-    let products = [...this.state.products];
-
+    let data = [...products];
     // edit state
-    products = products.map((p) => {
+    data = data.map((p) => {
       return {
         ...p,
         count: 0,
       };
     });
-
     //set state
-    this.setState({ products });
+    setProducts(data);
   };
 
-  PageChangedHandler = (pageNumber) => {
-    this.setState({ activePage: pageNumber });
+  const PageChangedHandler = (pageNumber) => {
+    setActivePage(pageNumber);
   };
 
-  filterChangedHandler = (typeId) => {
-    this.setState({ currentFilter: typeId, activePage: 1 });
+  const filterChangedHandler = (typeId) => {
+    setCurrentFilter(typeId);
+    setActivePage(1);
   };
 
-  cartChangedHandler = (prod) => {
+  const cartChangedHandler = (prod) => {
     // clone state
-    const products = [...this.state.products];
-    const index = products.indexOf(prod);
-    products[index] = { ...products[index] };
+    const data = [...products];
+    const index = data.indexOf(prod);
+    data[index] = { ...data[index] };
     // edit state
-    products[index].isInCart = !products[index].isInCart;
-    products[index].count = 0;
+    data[index].isInCart = !data[index].isInCart;
+    data[index].count = 0;
     // set state
-    this.setState({ products });
+    setProducts(data);
   };
 
-  AddProductToUI = (prod) => {
+  const AddProductToUI = (prod) => {
     // clone
-    const products = [...this.state.products];
+    const data = [...products];
     // edit
-    products.unshift(prod);
+    data.unshift(prod);
     // set state
-    this.setState({ products });
+    setProducts(data);
   };
 
-  updateProductInUI = (prod) => {
+  const updateProductInUI = (prod) => {
     // clone state
-    const products = [...this.state.products];
+    const data = [...products];
     const oldProduct = products.find((p) => p.id === prod.id);
-    const index = products.indexOf(oldProduct);
-    products[index] = { ...oldProduct };
+    const index = data.indexOf(oldProduct);
+    data[index] = { ...data[index] };
     // edit state
-    products[index].name = prod.name;
-    products[index].price = prod.price;
-    products[index].typeId = prod.typeId;
+    data[index].name = prod.name;
+    data[index].price = prod.price;
+    data[index].typeId = prod.typeId;
     // set state
-    this.setState({ products });
+    setProducts(data);
   };
 
-  deleteProductFromUI = (prod) => {
+  const deleteProductFromUI = (prod) => {
     // clone
-    let products = [...this.state.products];
+    let data = [...products];
     // edit
-    products = products.filter((p) => p.id !== prod.id);
+    data = data.filter((p) => p.id !== prod.id);
     // set state
-    this.setState({ products });
+    setProducts(data);
   };
 
-  handleAddProduct = (product) => {
-    axios.post("http://localhost:3000/products", product).then((res) => {
-      this.AddProductToUI(res.data);
-    });
+  const handleAddProduct = async (product) => {
+    try {
+      const res = await axios.post("http://localhost:3000/products", product);
+      AddProductToUI(res.data);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  handleEditProduct = (prod) => {
-    axios
-      .put(`http://localhost:3000/products/${prod.id}`, prod)
-      .then((res) => {
-        if (res.status === 200) {
-          this.updateProductInUI(prod);
-        }
-      })
-      .catch((er) => console.log(er));
+  const handleEditProduct = async (prod) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/products/${prod.id}`,
+        prod
+      );
+      if (res.status === 200) {
+        updateProductInUI(prod);
+        return true;
+      }
+    } catch {
+      return false;
+    }
   };
 
-  handleDelete = async (prod) => {
+  const handleDelete = async (prod) => {
     // optimistic delete
-    const originalData = [...this.state.products];
-    this.deleteProductFromUI(prod);
-
+    const originalData = [...products];
+    deleteProductFromUI(prod);
     try {
       await axios.delete(`http://localhost:3000/products/${prod.id}`);
     } catch (error) {
       if (error.response && error.response.status === 404) {
         toast.info("Product already deleted.", { autoClose: 3000 });
       }
-      this.setState({ products: originalData });
+      setProducts(originalData);
     }
   };
 
-  getTypes = () => {
-    return this.state.types.filter((t) => t.id !== 0);
+  const getTypes = () => {
+    return types.filter((t) => t.id !== 0);
   };
 
-  search = (query) => {};
+  const search = (query) => {};
 
-  render() {
-    return (
-      <React.Fragment>
-        <ToastContainer />
-        <NavBar
-          cartCount={this.state.products.filter((p) => p.isInCart).length}
-        />
-        <main className="container mt-4">
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/users" element={<Users />}>
-              <Route path=":id" element={<UserDetails />} />
-              <Route path="nested" element={<Home />} />
-            </Route>
-            <Route
-              path="/cart"
-              element={
-                <ShoppingCart
-                  products={this.state.products.filter((p) => p.isInCart)}
-                  onDelete={this.cartChangedHandler}
-                  onPlus={this.increaseCountHandler}
-                  onReset={this.resetHandler}
-                />
-              }
-            />
-            <Route
-              path="/menu"
-              element={
-                <Menu
-                  products={this.state.products}
-                  types={this.state.types}
-                  currentFilter={this.state.currentFilter}
-                  OnCartChanged={this.cartChangedHandler}
-                  pageSize={this.state.pageSize}
-                  activePage={this.state.activePage}
-                  onPageChanged={this.PageChangedHandler}
-                  OnFilterChanged={this.filterChangedHandler}
-                  search={this.search}
-                />
-              }
-            />
-            <Route
-              path="/admin-panel"
-              element={
-                <Admin
-                  products={this.state.products}
-                  handleDelete={this.handleDelete}
-                />
-              }
-            />
-            <Route
-              path="/products/:id"
-              element={
-                <ProductForm
-                  onAdd={this.handleAddProduct}
-                  onEdit={this.handleEditProduct}
-                  getTypes={this.getTypes}
-                />
-              }
-            />
-            <Route path="*" element={<h1>Not Found</h1>} />
-          </Routes>
-        </main>
-      </React.Fragment>
-    );
-  }
-}
+  return (
+    <React.Fragment>
+      <ToastContainer />
+      <NavBar cartCount={products.filter((p) => p.isInCart).length} />
+      <main className="container mt-4">
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/users" element={<Users />}>
+            <Route path=":id" element={<UserDetails />} />
+            <Route path="nested" element={<Home />} />
+          </Route>
+          <Route
+            path="/cart"
+            element={
+              <ShoppingCart
+                products={products.filter((p) => p.isInCart)}
+                onDelete={cartChangedHandler}
+                onPlus={increaseCountHandler}
+                onReset={resetHandler}
+              />
+            }
+          />
+          <Route
+            path="/menu"
+            element={
+              <Menu
+                products={products}
+                types={types}
+                currentFilter={currentFilter}
+                OnCartChanged={cartChangedHandler}
+                pageSize={pageSize}
+                activePage={activePage}
+                onPageChanged={PageChangedHandler}
+                OnFilterChanged={filterChangedHandler}
+                search={search}
+              />
+            }
+          />
+          <Route
+            path="/admin-panel"
+            element={<Admin products={products} handleDelete={handleDelete} />}
+          />
+          <Route
+            path="/products/:id"
+            element={
+              <ProductForm
+                onAdd={handleAddProduct}
+                onEdit={handleEditProduct}
+                getTypes={getTypes}
+              />
+            }
+          />
+          <Route path="*" element={<h1>Not Found</h1>} />
+        </Routes>
+      </main>
+    </React.Fragment>
+  );
+};
 
 export default App;
+
+const fetchProducts = (setter) => {
+  axios.get("http://localhost:3000/products").then((res) => setter(res.data));
+};
+
+const fetchTypes = (setter) => {
+  axios.get("http://localhost:3000/types").then((res) => setter(res.data));
+};
